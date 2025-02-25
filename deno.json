@@ -1,0 +1,58 @@
+{
+  "tasks": {
+    "server": "deno run -A --node-modules-dir server/src/server.ts",
+    "dev": "deno run -A --node-modules-dir npm:vite",
+    "build": "deno run -A --node-modules-dir npm:vite build",
+    "preview": "deno run -A --node-modules-dir npm:vite preview",
+    "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server dist/",
+    "compile": "deno compile --output build/app --no-check --include dist -A --node-modules-dir server/src/server.ts --env production"
+  },
+  "compilerOptions": {
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "jsxImportSourceTypes": "@types/react"
+  },
+  "imports": {
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.0",
+    "@mantine/charts": "npm:@mantine/charts@^7.15.1",
+    "@mantine/code-highlight": "npm:@mantine/code-highlight@^7.15.1",
+    "@mantine/core": "npm:@mantine/core@^7.15.1",
+    "@mantine/dates": "npm:@mantine/dates@^7.15.1",
+    "@mantine/dropzone": "npm:@mantine/dropzone@^7.15.1",
+    "@mantine/hooks": "npm:@mantine/hooks@^7.15.1",
+    "@mantine/modals": "npm:@mantine/modals@^7.15.1",
+    "@mantine/nprogress": "npm:@mantine/nprogress@^7.15.1",
+    "@mantine/spotlight": "npm:@mantine/spotlight@^7.15.1",
+    "@mantine/tiptap": "npm:@mantine/tiptap@^7.15.1",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
+    "@tiptap/extension-link": "npm:@tiptap/extension-link@^2.10.4",
+    "@tiptap/pm": "npm:@tiptap/pm@^2.10.4",
+    "@tiptap/react": "npm:@tiptap/react@^2.10.4",
+    "@tiptap/starter-kit": "npm:@tiptap/starter-kit@^2.10.4",
+    "@types/express": "npm:@types/express@^5.0.0",
+    "@types/react": "npm:@types/react@^18.3.1",
+    "@types/react-dom": "npm:@types/react-dom@^18.3.1",
+    "@vitejs/plugin-react-swc": "npm:@vitejs/plugin-react-swc@^3.7.1",
+    "autoprefixer": "npm:autoprefixer@^10.4.20",
+    "dayjs": "npm:dayjs@^1.11.13",
+    "express": "npm:express@^4.21.2",
+    "mysql2": "npm:mysql2@^3.11.5",
+    "path-to-regexp": "npm:path-to-regexp@^8.2.0",
+    "postcss": "npm:postcss@^8.4.49",
+    "react": "npm:react@^18.3.1",
+    "react-dom": "npm:react-dom@^18.3.1",
+    "recharts": "npm:recharts@^2.15.0",
+    "sass": "npm:sass@^1.83.0",
+    "sequelize": "npm:sequelize@^6.37.5",
+    "sequelize-cli": "npm:sequelize-cli@^6.6.2",
+    "tailwindcss": "npm:tailwindcss@^3.4.17",
+    "vite": "npm:vite@^5.4.9"
+  },
+  "nodeModulesDir": "auto",
+  "lint": {
+    "rules": {
+      "exclude": ["no-namespace"]
+    }
+  }
+}
