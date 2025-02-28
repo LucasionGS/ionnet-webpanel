@@ -1,13 +1,7 @@
 import "./App.scss"
-import React, { useState } from "react";
 import reactLogo from "./assets/react.svg"
-import { AppShell, Avatar, Button, Stack, Table, TextInput } from "@mantine/core";
-import { useEffect } from "react";
-import SharedUser from "../../shared/SharedUser.ts";
-import { useTransition } from "react";
+import { AppShell, Avatar, Button, Stack } from "@mantine/core";
 import { Link, RouterDisplay } from "./packages/router/index.tsx";
-import { type SharedWebconfig } from "../../shared/SharedWebconfigService.ts";
-import WebconfigService from "./services/WebconfigService.ts";
 
 function App() {  
   return (
