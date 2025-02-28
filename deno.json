@@ -1,6 +1,7 @@
 {
   "tasks": {
     "server": "deno run -A --node-modules-dir server/src/server.ts",
+    "server-w": "deno run --watch -A --node-modules-dir server/src/server.ts",
     "dev": "deno run -A --node-modules-dir npm:vite",
     "build": "deno run -A --node-modules-dir npm:vite build",
     "preview": "deno run -A --node-modules-dir npm:vite preview",
@@ -38,6 +39,7 @@
     "dayjs": "npm:dayjs@^1.11.13",
     "express": "npm:express@^4.21.2",
     "mysql2": "npm:mysql2@^3.11.5",
+    "node-linux-pam": "npm:node-linux-pam@^0.2.1",
     "path-to-regexp": "npm:path-to-regexp@^8.2.0",
     "postcss": "npm:postcss@^8.4.49",
     "react": "npm:react@^18.3.1",

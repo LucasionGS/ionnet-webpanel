@@ -1,0 +1,16 @@
+.page-transition {
+  opacity: 0;
+  animation: fadeIn 1s forwards ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: translate(-25%, 0);
+  }
+  50% {
+    transform: translate(0, 0);
+  }
+  100% {
+    opacity: 1;
+  }
+}

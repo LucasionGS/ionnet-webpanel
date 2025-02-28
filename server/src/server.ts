@@ -6,6 +6,14 @@ import { type HmrOptions } from "vite";
 import ApiController from "./controllers/ApiController.ts";
 import Migrations from "./database/migrations.ts";
 import { sequelize } from "./database/sequelize.ts";
+import fs from "node:fs";
+
+if (!fs.existsSync(Environment.APPDIR)) {
+  fs.mkdirSync(Environment.APPDIR, { recursive: true });
+}
+
+
+console.log("Starting server...");
 
 const app = express();
 

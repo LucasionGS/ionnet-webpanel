@@ -35,6 +35,7 @@ export default class Migrations {
   }
 
   public static async runMigrations(sequelize: Sequelize) {
+    await Migrations.ensureDatabase(sequelize);
     await Migrations.ensureMigrationsTable(sequelize);
     const migrations = [...Migrations.migrations].sort((a, b) => a.stamp - b.stamp);
     for (const migration of migrations) {
@@ -62,70 +63,42 @@ export default class Migrations {
       }
     }
   }
+
+  /**
+   * Ensure that the database exists. Creates the database if it does not exist.
+   * @param sequelize The Sequelize instance to use to create the database.
+   */
+  public static async ensureDatabase(sequelize: Sequelize) {
+    await sequelize.getQueryInterface().createDatabase(sequelize.config.database).catch(() => {});
+  }
 }
 
 
 //#region Migrations
 Migrations.addMigration({
-  name: "create-initial-schema",
+  name: "create-sessions-table",
   stamp: 1,
   async up(int) {
-    await int.createTable("icms_nodes", {
+    await int.createTable("sessions", {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      name: {
+      user: {
         type: DataTypes.STRING
       },
-      parentId: {
-        type: DataTypes.INTEGER
-      },
-      fields: {
-        type: DataTypes.TEXT
-      },
-      authorId: {
-        type: DataTypes.INTEGER
+      token: {
+        type: DataTypes.STRING
       },
       createdAt: {
-        type: DataTypes.DATE
-      },
-      updatedAt: {
         type: DataTypes.DATE
       }
     });
   },
-  async down(int) {
-    await int.dropTable("icms_nodes");
-  }
-});
 
-Migrations.addMigration({
-  name: "add-children-to-nodes",
-  stamp: 2,
-  async up(int) {
-    await int.addColumn("icms_nodes", "children", {
-      type: DataTypes.TEXT
-    });
-  },
   async down(int) {
-    await int.removeColumn("icms_nodes", "children");
-  }
-});
-
-Migrations.addMigration({
-  name: "add-data",
-  stamp: 3,
-  async up(int) {
-    await int.bulkInsert("icms_nodes", [
-      { name: "Home", fields: "[]", authorId: 1, createdAt: new Date(), updatedAt: new Date() },
-      { name: "About", fields: "[]", authorId: 1, createdAt: new Date(), updatedAt: new Date() },
-      { name: "Contact", fields: "[]", authorId: 1, createdAt: new Date(), updatedAt: new Date() },
-    ]);
-  },
-  async down(int) {
-    await int.bulkDelete("icms_nodes", {});
+    await int.dropTable("sessions");
   }
 });
 

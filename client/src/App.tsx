@@ -1,50 +1,15 @@
 import "./App.scss"
 import React, { useState } from "react";
 import reactLogo from "./assets/react.svg"
-import { AppShell, Button, Stack, Table, TextInput } from "@mantine/core";
+import { AppShell, Avatar, Button, Stack, Table, TextInput } from "@mantine/core";
 import { useEffect } from "react";
-import User from "../../shared/User.ts";
+import SharedUser from "../../shared/SharedUser.ts";
 import { useTransition } from "react";
-import Router from "./packages/router/Router.ts";
-import RouterProvider, { Link, RouterDisplay } from "./packages/router/index.tsx";
+import { Link, RouterDisplay } from "./packages/router/index.tsx";
+import { type SharedWebconfig } from "../../shared/SharedWebconfigService.ts";
+import WebconfigService from "./services/WebconfigService.ts";
 
-function App() {
-  const { user } = useUser();
-  const [search, setSearch] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const [initialTableItems, setInitialTableItems] = useState<{
-    id: number,
-    name: string,
-    parentId: number,
-    fields: string,
-    createdAt: string,
-    updatedAt: string
-  }[]>([]);
-  const [tableItems, setTableItems] = useState<{
-    id: number,
-    name: string,
-    parentId: number,
-    fields: string,
-    createdAt: string,
-    updatedAt: string
-  }[]>([]);
-
-  useEffect(() => {
-    fetch("/api/nodes").then(response => response.json()).then(nodes => {
-      setInitialTableItems(nodes);
-      setTableItems(nodes);
-    });
-  }, []);
-  
-  useEffect(() => {
-    startTransition(() => {
-      setTableItems(
-        initialTableItems
-        .filter(node => node.name.toLowerCase().includes(search.toLowerCase()))
-      );
-    });
-  }, [search, initialTableItems]);
-  
+function App() {  
   return (
     <AppShell
       header={{
@@ -68,7 +33,7 @@ function App() {
             </h1>
           </div>
           <div className="flex items-center">
-            <Button variant="transparent">Button</Button>
+            <Avatar size="lg" className="ml-5" />
           </div>
         </div>
       </AppShell.Header>
@@ -77,92 +42,19 @@ function App() {
         <AppShell.Navbar className="bg-gray-100 dark:bg-gray-800">
           <Stack gap={0}>
             <Link href="/">
-              <Button fullWidth size="compact-lg" variant="light">Content</Button>
-            </Link>
-            <Link href="/structure">
-              <Button fullWidth size="compact-lg" variant="light">Structure</Button>
-            </Link>
-            <Link href="/analytics">
-              <Button fullWidth size="compact-lg" variant="light">Analytics</Button>
+              <Button fullWidth size="compact-lg" variant="light">Websites</Button>
             </Link>
           </Stack>
         </AppShell.Navbar>
 
-        <AppShell.Main>
+        <AppShell.Main className="flex-1">
           <div className="p-5">
-            <h2 className="text-2xl">Content</h2>
-            <p>
-              {user && `Hello, ${user.name}!`}
-            </p>
             <RouterDisplay />
-            <Table striped className="mt-5" style={{
-              tableLayout: "fixed"
-            }} withTableBorder stickyHeader stickyHeaderOffset={60}>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>
-                    <TextInput
-                      value={search}
-                      onChange={event => setSearch(event.target.value)}
-                      placeholder="Search"
-                      className="w-full"
-                    />
-                  </Table.Th>
-                  <Table.Th></Table.Th>
-                  <Table.Th></Table.Th>
-                  <Table.Th></Table.Th>
-                  <Table.Th></Table.Th>
-                </Table.Tr>
-                <Table.Tr>
-                  <Table.Th>Title</Table.Th>
-                  <Table.Th>Type</Table.Th>
-                  <Table.Th>Author</Table.Th>
-                  <Table.Th>Created</Table.Th>
-                  <Table.Th>Updated</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-
-              <Table.Tbody>
-                {isPending &&
-                  <Table.Tr>
-                    <Table.Td colSpan={5}>Loading...</Table.Td>
-                  </Table.Tr>
-                }
-
-                {tableItems.map((node, index) => (
-                  <Table.Tr>
-                  <Table.Td>{node.name}</Table.Td>
-                  <Table.Td>Article</Table.Td>
-                  <Table.Td>John Doe</Table.Td>
-                  <Table.Td>2021-12-01</Table.Td>
-                  <Table.Td>2021-12-01</Table.Td>
-                </Table.Tr>
-              ))}
-                
-              </Table.Tbody>
-            </Table>
           </div>
         </AppShell.Main>
       </div>
     </AppShell>
   )
-}
-
-function useUser() {
-  const [user, setUser] = useState<User | null>(null)
-
-  useEffect(() => {
-    fetch("/api")
-      .then(response => response.json())
-      .then(data => {
-        setUser(new User(data.user.name, data.user.email, data.user.password, data.user.id))
-      });
-  }, []);
-  
-  return {
-    user,
-    setUser
-  }
 }
 
 export default App
