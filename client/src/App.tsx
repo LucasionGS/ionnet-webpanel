@@ -2,8 +2,11 @@ import "./App.scss"
 import reactLogo from "./assets/react.svg"
 import { AppShell, Avatar, Button, Stack } from "@mantine/core";
 import { Link, RouterDisplay } from "./packages/router/index.tsx";
+import { useIonnet } from "./providers/IonnetProvider.tsx";
 
-function App() {  
+function App() {
+  const ionnet = useIonnet();
+
   return (
     <AppShell
       header={{
@@ -11,7 +14,7 @@ function App() {
       }}
 
       navbar={{
-        width: 200,
+        width: ionnet.showSidebar ? 200 : 0,
         breakpoint: "xs"
       }}
     >
@@ -33,13 +36,17 @@ function App() {
       </AppShell.Header>
       
       <div className="flex md:flex-row flex-col">
-        <AppShell.Navbar className="bg-gray-100 dark:bg-gray-800">
-          <Stack gap={0}>
-            <Link href="/">
-              <Button fullWidth size="compact-lg" variant="light">Websites</Button>
-            </Link>
-          </Stack>
-        </AppShell.Navbar>
+        {
+          ionnet.showSidebar && (
+            <AppShell.Navbar className="bg-gray-100 dark:bg-gray-800">
+              <Stack gap={0}>
+                <Link href="/">
+                  <Button fullWidth size="compact-lg" variant="light">Websites</Button>
+                </Link>
+              </Stack>
+            </AppShell.Navbar>
+          )
+        }
 
         <AppShell.Main className="flex-1">
           <div className="p-5">

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import Env from "../Environment.ts";
 import { promisify } from "node:util";
+import { exec } from "node:child_process";
 
 const exists = promisify(fs.exists);
 
@@ -11,6 +12,28 @@ namespace Nginx {
       fsp.mkdir(Env.NGINX_AVAILABLE_DIR, { recursive: true });
     }
   });
+
+  export function reload() {
+    return new Promise((resolve, reject) => {
+      exec("nginx -s reload", (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        }
+        resolve({ stdout, stderr });
+      });
+    });
+  }
+
+  export function restart() {
+    return new Promise((resolve, reject) => {
+      exec("nginx -s reopen", (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        }
+        resolve({ stdout, stderr });
+      });
+    });
+  }
 
   export async function getConfigs() {
     const webconfig = await fsp.readdir(Env.NGINX_AVAILABLE_DIR, "utf-8");

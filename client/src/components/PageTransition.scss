@@ -1,9 +1,9 @@
 .page-transition {
   opacity: 0;
-  animation: fadeIn 1s forwards ease-in-out;
+  animation: ionnet-PageTransition-FadeIn 0.5s forwards ease-in-out;
 }
 
-@keyframes fadeIn {
+@keyframes ionnet-PageTransition-FadeIn {
   0% {
     transform: translate(-25%, 0);
   }

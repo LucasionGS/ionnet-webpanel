@@ -4,6 +4,8 @@ import Router from "./Router.ts";
 export interface RouterContext {
   navigate: (path: string) => void;
   content: React.ReactNode;
+  exitWarning: boolean,
+  enableExitWarning: (state: boolean) => void;
 }
 
 export const Context = React.createContext<RouterContext>(null!);
@@ -15,6 +17,8 @@ export const Context = React.createContext<RouterContext>(null!);
 function RouterProvider(props: { children: React.ReactNode, router: Router }) {
   const [path, setPath] = React.useState<string>(location.pathname);
   const [content, setContent] = React.useState<React.ReactNode>(null);
+  const [exitWarning, setExitWarning] = React.useState(false);
+  const enableExitWarning = React.useCallback((state: boolean) => setExitWarning(state), []);
   
   React.useEffect(() => {
     const statechange = () => {
@@ -37,13 +41,42 @@ function RouterProvider(props: { children: React.ReactNode, router: Router }) {
     }
   }, [path]);
 
+  const warnExit = React.useCallback((e: BeforeUnloadEvent) => {
+    if (exitWarning) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  }, [exitWarning]);
+
+  React.useEffect(() => {
+    if (exitWarning) {
+      addEventListener('beforeunload', warnExit);
+    }
+    return () => {
+      removeEventListener('beforeunload', warnExit);
+    }
+  }, [exitWarning]);
+
   const navigate = (path: string) => {
+    if (exitWarning && !confirm("Are you sure you want to leave this page?")) {
+      return;
+    }
+
+    if (exitWarning) {
+      enableExitWarning(false);
+    }
+    
     history.pushState(null, "", path);
     setPath(path);
   }
 
   return (
-    <Context.Provider value={{ navigate, content }}>
+    <Context.Provider value={{
+      navigate,
+      content,
+      exitWarning,
+      enableExitWarning
+    }}>
       {props.children}
     </Context.Provider>
   );
@@ -88,6 +121,10 @@ export function useNavigate() {
   return function navigate(path: string) {
     route.navigate(path);
   }
+}
+
+export function useExitWarning() {
+  
 }
 
 export default RouterProvider;

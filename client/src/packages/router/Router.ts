@@ -20,6 +20,11 @@ export default class Router {
     return [null, null];
   }
 
+  /**
+   * Add a route that leads tp a callback generating a React element.
+   * @param path A dynamic path to match and trigger this route. Example: "/website/:id"
+   * @param callbacks The callbacks to call when the route is matched. At least the last callback should return a React element.
+   */
   public add(path: string, ...callbacks: RouteMiddleware[]): void {
     this.routes.push(new Route(path, callbacks));
   }

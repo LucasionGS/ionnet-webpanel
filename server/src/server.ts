@@ -1,4 +1,4 @@
-import Environment from "./Environment.ts";
+import Environment, { isDebug } from "./Environment.ts";
 import process from "node:process";
 // @deno-types="@types/express"
 import express from "express";
@@ -14,6 +14,16 @@ if (!fs.existsSync(Environment.APPDIR)) {
 
 
 console.log("Starting server...");
+if (isDebug()) {
+  console.log(`Debug mode: ${Environment.DEBUG}`);
+  console.log(`Environment: ${Environment.NODE_ENV}`);
+  const __dirs = [Environment.APPDIR, Environment.NGINX_DIR, Environment.NGINX_AVAILABLE_DIR, Environment.NGINX_ENABLED_DIR, Environment.NGINX_MANAGED];
+  console.log(`Using directories:`);
+  for (let i = 0; i < __dirs.length; i++) {
+    console.log(`  ${__dirs[i]}`);
+  }
+}
+
 
 const app = express();
 

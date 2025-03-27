@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { json, Router } from "express";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import Env from "../Environment.ts";
@@ -52,12 +52,23 @@ namespace WebconfigController {
     const id = req.params.id;
     const config = await Nginx.getConfig(id);
     const enabled = await Nginx.getConfigEnabled(id);
+    const managed = /^#IONNET~MANAGED$/.test(config.split("\n")[0]);
 
     res.json({
       id,
       config,
       enabled,
+      managed,
       ...await Nginx.getConfigDetails(id)
+    });
+  });
+
+  router.put("/:id", json(), async (req, res) => {
+    const id = req.params.id;
+    const config = req.body.config;
+    await fsp.writeFile(`${Env.NGINX_AVAILABLE_DIR}/${id}`, config);
+    res.json({
+      message: "Saved"
     });
   });
 

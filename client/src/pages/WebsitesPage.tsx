@@ -1,11 +1,12 @@
 import { useEffect, useState, useTransition } from 'react'
-import { Button, Table, TextInput } from "@mantine/core";
-import WebconfigService from "../services/WebconfigService.ts";
+import { Button, Group, Loader, Table, TextInput } from "@mantine/core";
+import WebconfigService from "../services/WebconfigService.tsx";
 import type { SharedWebconfig } from "../../../shared/SharedWebconfigService.ts";
 import PageTransition from "../components/PageTransition.tsx";
 import { useForceUpdate } from "@mantine/hooks";
 import { Link } from "../packages/router/index.tsx";
 import useUser from "../hooks/useUser.tsx";
+import NginxGlobalActions from "../components/NginxGlobalActions/NginxGlobalActions.tsx";
 
 export default function WebsitesPage() {
   const { user } = useUser();
@@ -13,7 +14,7 @@ export default function WebsitesPage() {
   const [search, setSearch] = useState("");
   const [isPending, startTransition] = useTransition();
   const [initialConfigItems, setInitialConfigItems] = useState<SharedWebconfig[]>([]);
-  const [configItems, setConfigItems] = useState<SharedWebconfig[]>([]);
+  const [configItems, setConfigItems] = useState<SharedWebconfig[]>(null!);
   const forceUpdate = useForceUpdate();
 
   useEffect(() => {
@@ -32,9 +33,14 @@ export default function WebsitesPage() {
     });
   }, [search, initialConfigItems]);
 
+  if (!configItems) return null;
+  
   return (
     <PageTransition>
-      <h2 className="text-2xl">Content</h2>
+      <Group>
+        <h2 className="text-2xl">Websites</h2>
+        <NginxGlobalActions />
+      </Group>
       <p>
         {user && `Hello, ${user.username}!`}
       </p>
@@ -50,6 +56,11 @@ export default function WebsitesPage() {
                 onChange={event => setSearch(event.target.value)}
                 placeholder="Search"
                 className="w-full"
+                rightSection={
+                  isPending && (
+                    <Loader />
+                  )
+                }
               />
             </Table.Th>
             <Table.Th></Table.Th>
@@ -65,12 +76,6 @@ export default function WebsitesPage() {
         </Table.Thead>
 
         <Table.Tbody>
-          {isPending &&
-            <Table.Tr>
-              <Table.Td colSpan={5}>Loading...</Table.Td>
-            </Table.Tr>
-          }
-
           {configItems.map((website, index) => (
             <Table.Tr key={index}>
               <Table.Td>
@@ -82,11 +87,7 @@ export default function WebsitesPage() {
                   variant={website.enabled ? "filled" : "light"}
                   color={website.enabled ? "teal" : "gray"}
                   onClick={() => {
-                    if (website.enabled) WebconfigService.disableConfig(website.id)
-                    else WebconfigService.enableConfig(website.id);
-
-                    website.enabled = !website.enabled;
-                    forceUpdate();
+                    WebconfigService.promptToggleConfig(website).then(() => forceUpdate());
                   }}
                 >
                   {website.enabled ? "Enabled" : "Disabled"}

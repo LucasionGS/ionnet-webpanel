@@ -1,12 +1,11 @@
 export default class SharedUser {
   public id: number;
   public username: string;
+  public token?: string;
 
-  constructor(data: {
-    id: number;
-    username: string;
-  }) {
-    this.id = data.id;
-    this.username = data.username;
+  constructor(id: number, username: string, token?: string) {
+    this.id = id;
+    this.username = username;
+    this.token = token;
   }
 }
