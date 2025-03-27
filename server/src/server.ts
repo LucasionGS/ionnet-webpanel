@@ -1,4 +1,8 @@
-import Environment, { isDebug } from "./Environment.ts";
+import envs, { isDebug } from "./Environment.ts";
+if (!isDebug() && Deno.uid() !== 0) {
+  console.error("This server must be run as root.");
+  Deno.exit(1);
+}
 import process from "node:process";
 // @deno-types="@types/express"
 import express from "express";
@@ -8,16 +12,16 @@ import Migrations from "./database/migrations.ts";
 import { sequelize } from "./database/sequelize.ts";
 import fs from "node:fs";
 
-if (!fs.existsSync(Environment.APPDIR)) {
-  fs.mkdirSync(Environment.APPDIR, { recursive: true });
+if (!fs.existsSync(envs.APPDIR)) {
+  fs.mkdirSync(envs.APPDIR, { recursive: true });
 }
 
 
 console.log("Starting server...");
 if (isDebug()) {
-  console.log(`Debug mode: ${Environment.DEBUG}`);
-  console.log(`Environment: ${Environment.NODE_ENV}`);
-  const __dirs = [Environment.APPDIR, Environment.NGINX_DIR, Environment.NGINX_AVAILABLE_DIR, Environment.NGINX_ENABLED_DIR, Environment.NGINX_MANAGED];
+  console.log(`Debug mode: ${envs.DEBUG}`);
+  console.log(`Environment: ${envs.NODE_ENV}`);
+  const __dirs = [envs.APPDIR, envs.NGINX_DIR, envs.NGINX_AVAILABLE_DIR, envs.NGINX_ENABLED_DIR, envs.NGINX_MANAGED];
   console.log(`Using directories:`);
   for (let i = 0; i < __dirs.length; i++) {
     console.log(`  ${__dirs[i]}`);
@@ -29,17 +33,17 @@ const app = express();
 
 // Check arguments
 const args = process.argv;
-Environment.NODE_ENV = "development";
+envs.NODE_ENV = "development";
 for (let i = 0; i < args.length; i++) {
   if (args[i] === "--env") {
-    Environment.NODE_ENV = args[i + 1];
+    envs.NODE_ENV = args[i + 1];
     args.splice(i, 2);
     i--;
     continue;
   }
 
   if (args[i] === "--port") {
-    Environment.PORT = args[i + 1];
+    envs.PORT = args[i + 1];
     args.splice(i, 2);
     i--;
     continue;
@@ -70,18 +74,18 @@ app.use("/api", ApiController.router);
 
 // Deploying the server for either production or development.
 // When compiled, the server will only work in production mode.
-if (Environment.NODE_ENV === "production") {
+if (envs.NODE_ENV === "production") {
   serveWebApp(app);
-  const port = +(Environment.PORT || 3000);
+  const port = +(envs.PORT || 3000);
   app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port} in ${Environment.NODE_ENV} mode`);
+    console.log(`Server running at http://localhost:${port} in ${envs.NODE_ENV} mode`);
   });
 }
 else {
   const vite = await serveViteServer(app);
-  const port = +(Environment.PORT || 3000);
+  const port = +(envs.PORT || 3000);
   app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port} in ${Environment.NODE_ENV} mode`);
+    console.log(`Server running at http://localhost:${port} in ${envs.NODE_ENV} mode`);
     console.log(`Server websocket at ws://localhost:${(vite.config.server.hmr as HmrOptions)?.port}`);
   });
 }

@@ -2,13 +2,14 @@ import { json, RequestHandler, Router } from "express";
 import { pamAuthenticatePromise, pamErrors } from "node-linux-pam";
 import User from "../unix/User.ts";
 import SharedUser from "../../../shared/SharedUser.ts";
+import envs from "../Environment.ts";
 
 
 namespace UserController {
   /**
    * Middleware to check if the user is authenticated and getting the user.
    */
-  export const auth = ((req, res, next) => {
+  export const auth = (async (req, res, next) => {
     const token = req.cookies.session;
     if (!token) {
       res.status(401).json({
@@ -19,6 +20,16 @@ namespace UserController {
     const user = User.fromJwt(token);
     
     if (user) {
+      if (envs.NGINX_ALLOW_GROUP) {
+        const groups = await user.getGroups();
+        if (!groups.includes(envs.NGINX_ALLOW_GROUP)) {
+          res.status(403).json({
+            error: "Forbidden"
+          });
+          return;
+        }
+      }
+      
       (req).user = user;
       next();
     } else {

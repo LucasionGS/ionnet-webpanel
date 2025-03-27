@@ -35,6 +35,19 @@ export interface Environment {
    * Files are only present in this directory if they are managed by the application.
    */
   NGINX_MANAGED: string;
+  /**
+   * The group that is allowed to manage nginx configuration files.
+   * Users logging in to the web panel must be in this group or will not be allowed to login.
+   */
+  NGINX_ALLOW_GROUP: string;
+  /**
+   * The command to reload the nginx configuration.
+   */
+  NGINX_COMMAND_RELOAD: string;
+  /**
+   * The command to restart the nginx service.
+   */
+  NGINX_COMMAND_RESTART: string;
 }
 
 const envs = <Environment>{};

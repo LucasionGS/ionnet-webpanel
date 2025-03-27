@@ -25,3 +25,6 @@ export const NGINX_AVAILABLE_DIR = "${NGINX_DIR}/sites-available";
 export const NGINX_ENABLED_DIR = "${NGINX_DIR}/sites-enabled";
 export const NGINX_MANAGED = "${APPDIR}/managed";
 export const NGINX_CONF = "${NGINX_DIR}/nginx.conf";
+export const NGINX_ALLOW_GROUP = "sudo";
+export const NGINX_COMMAND_RELOAD = "nginx -s reload";
+export const NGINX_COMMAND_RESTART = "nginx -s reopen";

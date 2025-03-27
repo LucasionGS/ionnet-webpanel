@@ -3,6 +3,7 @@ import fsp from "node:fs/promises";
 import Env from "../Environment.ts";
 import { promisify } from "node:util";
 import { exec } from "node:child_process";
+import envs from "../Environment.ts";
 
 const exists = promisify(fs.exists);
 
@@ -15,7 +16,7 @@ namespace Nginx {
 
   export function reload() {
     return new Promise((resolve, reject) => {
-      exec("nginx -s reload", (error, stdout, stderr) => {
+      exec(envs.NGINX_COMMAND_RELOAD, (error, stdout, stderr) => {
         if (error) {
           reject(error);
         }
@@ -26,7 +27,7 @@ namespace Nginx {
 
   export function restart() {
     return new Promise((resolve, reject) => {
-      exec("nginx -s reopen", (error, stdout, stderr) => {
+      exec(envs.NGINX_COMMAND_RESTART, (error, stdout, stderr) => {
         if (error) {
           reject(error);
         }

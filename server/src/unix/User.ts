@@ -16,6 +16,20 @@ export default class User extends SharedUser {
     return null;
   }
 
+  public getGroups(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      const cmd = new Deno.Command("groups", {args: [this.username]});
+      cmd.output().then((output) => {
+        if (output.code === 0) {
+          const groups = new TextDecoder().decode(output.stdout).trim().split(" ");
+          resolve(groups.slice(1).filter(a => a != ":")); // Remove the username from the groups
+        } else {
+          reject(new Error("Failed to get groups"));
+        }
+      });
+    });
+  }
+
   public jwt() {
     return jwt.sign({ id: this.id, username: this.username }, Envs.SECRET_KEY)
   }
